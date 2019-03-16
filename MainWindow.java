@@ -34,7 +34,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
-
+ // erste Kommentar
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
