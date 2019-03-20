@@ -288,9 +288,9 @@ public class MainWindow extends javax.swing.JFrame {
               md = con.getMetaData();
             ResultSet res_prim = md.getPrimaryKeys(null, null, "city");
             res_prim.next();
-            primary_key = res_prim.getString(4);
-            pkPosition =res_prim.getInt("KEY_SEQ")-1;
-            System.out.println("pkpos"+pkPosition);
+            primary_key = res_prim.getString(4); //primarykey (PK) nehmen
+            pkPosition =res_prim.getInt("KEY_SEQ")-1; // Position von PK
+            System.out.println("pkpos "+pkPosition);
             System.out.println("primary key: " + res_prim.getString(4));
 
         } catch (SQLException ex) {
@@ -355,6 +355,7 @@ public class MainWindow extends javax.swing.JFrame {
         //PreparedStatement fuer Update
         try {
             PreparedStatement update =
+               
                     con.prepareStatement(
                             "UPDATE "+cbxTables.getSelectedItem().toString()+" SET "+ columnName + "= ? WHERE " + primary_key + " = ?");
             update.setString(1, entry_changed);
