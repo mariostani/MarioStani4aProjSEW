@@ -29,6 +29,7 @@ public class MainWindow extends javax.swing.JFrame {
     private Connection con = null;
     DatabaseMetaData md = null;
     String primary_key = null;
+     int cmxindex=0;
     int pkPosition = 0;
     /**
      * Creates new form MainWindow
@@ -76,6 +77,7 @@ public class MainWindow extends javax.swing.JFrame {
         txtDatabase = new javax.swing.JTextField();
         cbxTables = new javax.swing.JComboBox<>();
         DelBtn = new javax.swing.JButton();
+        InsertBtn = new javax.swing.JButton();
 
         jLabel1.setText("jLabel1");
 
@@ -164,6 +166,13 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        InsertBtn.setText("Insert");
+        InsertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InsertBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -189,22 +198,27 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(lblPassword)
                             .addComponent(lblUser))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtUser, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
-                            .addComponent(txtPassword))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(lblDatabase)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDatabase, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtUser, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                                    .addComponent(txtPassword))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(10, 10, 10)
+                                        .addComponent(lblDatabase)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtDatabase, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cbxTables, 0, 130, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnDisconnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbxTables, 0, 130, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnDisconnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addComponent(InsertBtn)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -228,7 +242,9 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbxTables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(DelBtn)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(DelBtn)
+                    .addComponent(InsertBtn))
                 .addGap(12, 12, 12)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(52, Short.MAX_VALUE))
@@ -325,8 +341,7 @@ public class MainWindow extends javax.swing.JFrame {
         System.out.println("table changed");
         int row = e.getFirstRow();
         String columnName = 
-         tblEntries.getModel().getColumnName(e.getColumn());
-                
+         tblEntries.getModel().getColumnName(e.getColumn());      
         int id = 
                 Integer.parseInt(tblEntries.getModel().getValueAt(row, pkPosition).toString());
           System.out.println(columnName +" " +  id);
@@ -358,7 +373,7 @@ public class MainWindow extends javax.swing.JFrame {
             ResultSet result = md.getColumns(
                     null, null, cbxTables.getSelectedItem().toString(), null);
 
-            //tblEntries.removeAll();
+       
             DefaultTableModel tableModel = new DefaultTableModel();
 
             while (result.next()) {
@@ -366,7 +381,7 @@ public class MainWindow extends javax.swing.JFrame {
 
                 tableModel.addColumn(columnName);
                 num_columns++;
-                //               int columnType = result.getInt(5);
+          
             }
             tblEntries.setModel(tableModel);
 
@@ -423,14 +438,46 @@ public class MainWindow extends javax.swing.JFrame {
             PreparedStatement delete=con.prepareStatement("DELETE from city WHERE id = ?;");
              delete.setInt(1, id);
              delete.executeUpdate();
-             tab.removeRow(row);
+             tableModel.removeRow(row);
              System.out.println(delete);
-        }catch(Exception e){
+        }catch(SQLException e){
         JOptionPane.showMessageDialog(null, e);
         }
       }
 
     }//GEN-LAST:event_DelBtnActionPerformed
+
+    private void InsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertBtnActionPerformed
+        try { 
+            int num_cols=0;
+            int lastRow=tblEntries.getModel().getRowCount()-1;
+            ResultSet rs =md.getColumns(null, null, cbxTables.getItemAt(cmxindex).toString(), null);
+            String sql="INSERT INTO "+cbxTables.getItemAt(cmxindex)+"(";
+            rs.next();
+            while(rs.next()){
+                sql+=rs.getString(4)+",";
+                num_cols++;
+            }
+            sql = sql.substring(0, sql.length() - 1);
+            sql+=") VALUES (";
+         
+            for(int i=0;i<num_cols;i++){
+                sql+="?,";
+//                sql+=tableResults.getModel().getValueAt(lastRow, i+1)+",";
+            }
+            sql = sql.substring(0, sql.length() - 1);
+            sql+=");";
+            System.out.println(sql);
+            PreparedStatement prepInsert=con.prepareStatement(sql);
+            for(int i=0;i<num_cols;i++){
+                prepInsert.setString(i+1, ""+tblEntries.getModel().getValueAt(lastRow, i+1));
+            }
+            
+            prepInsert.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_InsertBtnActionPerformed
     
     /**
      * @param args the command line arguments
@@ -469,6 +516,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DelBtn;
+    private javax.swing.JButton InsertBtn;
     private javax.swing.JButton btnConnect;
     private javax.swing.JButton btnDisconnect;
     private javax.swing.JComboBox<String> cbxTables;
@@ -490,5 +538,5 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField txtServer;
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
-  DefaultTableModel tab = new DefaultTableModel();
+      OurTableModel tableModel=null;
 }
