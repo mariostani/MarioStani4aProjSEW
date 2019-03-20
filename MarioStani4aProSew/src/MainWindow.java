@@ -449,8 +449,9 @@ int num_columns = 0;
 // InsertButton neue Zeilen werden eingefuegt
     private void InsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertBtnActionPerformed
         try { 
-            int num_cols=0;
-            int lastRow=tblEntries.getModel().getRowCount()-1;
+            //SQL-String wird vorbereitet
+            int num_cols=0; //Zahl von Spalten
+            int lastRow=tblEntries.getModel().getRowCount()-1; // lezte Zeile wird genommen
             ResultSet rs =md.getColumns(null, null, cbxTables.getItemAt(cmxindex).toString(), null);
             String sql="INSERT INTO "+cbxTables.getItemAt(cmxindex)+"(";
             rs.next();
@@ -467,14 +468,14 @@ int num_columns = 0;
             }
             sql = sql.substring(0, sql.length() - 1);
             sql+=");";
-            System.out.println(sql);
+            System.out.println(sql); // Am Bildschirm der ganze SQL-Befehl
             PreparedStatement prepInsert=con.prepareStatement(sql);
             for(int i=0;i<num_cols;i++){
-                prepInsert.setString(i+1, ""+tblEntries.getModel().getValueAt(lastRow, i+1));
+                prepInsert.setString(i+1, ""+tblEntries.getModel().getValueAt(lastRow, i+1)); // Werten von letzen Zeil, in der neuen einfuegen
             }
             
             prepInsert.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (SQLException ex) /*SQL-Exception um Fehler klarer zu sehen*/ {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_InsertBtnActionPerformed
@@ -509,7 +510,7 @@ int num_columns = 0;
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainWindow().setVisible(true);
+                new MainWindow().setVisible(true); //MainWindow sichtbar setzen
             }
         });
     }
