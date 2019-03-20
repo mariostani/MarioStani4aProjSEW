@@ -374,7 +374,7 @@ public class MainWindow extends javax.swing.JFrame {
                     null, null, cbxTables.getSelectedItem().toString(), null);
 
        
-            DefaultTableModel tableModel = new DefaultTableModel();
+           
 
             while (result.next()) {
                 String columnName = result.getString(4);
@@ -432,19 +432,16 @@ public class MainWindow extends javax.swing.JFrame {
     private void DelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelBtnActionPerformed
         // TODO add your handling code here:
      int row= tblEntries.getSelectedRow();
-      int id =  Integer.parseInt(tblEntries.getModel().getValueAt(row, pkPosition).toString());
-      if(row!=tblEntries.getModel().getRowCount()-1){
+  int id =  Integer.parseInt(tblEntries.getModel().getValueAt(row, pkPosition).toString());
         try{      
             PreparedStatement delete=con.prepareStatement("DELETE from city WHERE id = ?;");
              delete.setInt(1, id);
              delete.executeUpdate();
-             tableModel.removeRow(row);
+            tableModel.removeRow(row);
              System.out.println(delete);
-        }catch(SQLException e){
+        }catch(Exception e){
         JOptionPane.showMessageDialog(null, e);
         }
-      }
-
     }//GEN-LAST:event_DelBtnActionPerformed
 
     private void InsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertBtnActionPerformed
@@ -463,7 +460,7 @@ public class MainWindow extends javax.swing.JFrame {
          
             for(int i=0;i<num_cols;i++){
                 sql+="?,";
-//                sql+=tableResults.getModel().getValueAt(lastRow, i+1)+",";
+
             }
             sql = sql.substring(0, sql.length() - 1);
             sql+=");";
@@ -538,5 +535,5 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField txtServer;
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
-      OurTableModel tableModel=null;
+       DefaultTableModel tableModel = new DefaultTableModel();
 }
