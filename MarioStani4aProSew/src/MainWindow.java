@@ -35,7 +35,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
-
+        
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
@@ -320,36 +320,7 @@ public class MainWindow extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnDisconnectActionPerformed
-   private void DeleteChange(TableModelEvent e){
-    System.out.println("row deleted");
-        int row = e.getFirstRow();
-         String columnName = 
-         tblEntries.getModel().getColumnName(e.getColumn());
-                
-        int id = 
-                Integer.parseInt(tblEntries.getModel().getValueAt(row, pkPosition).toString());
-          System.out.println(columnName +" " +  id);
 
-        String entry_changed = 
-                tblEntries.getModel().getValueAt(row, e.getColumn()).toString();  
-        try {
-            PreparedStatement update =
-                    con.prepareStatement(
-                            "DELETE "+ columnName + " WHERE " + primary_key + " = ?");
-
-            update.setInt(1, id);
-            System.out.println(update);
-            System.out.println(update.executeUpdate() + " row deleted");
-            
-        } catch (SQLException ex) {
-            System.out.println("Error deleting row");
-            javax.swing.JOptionPane.showMessageDialog(this, "Error dleting row");
-        }
-   
-   
-   
-   
-   }
     private void tableModelChanged(TableModelEvent e) {
         System.out.println("table changed");
         int row = e.getFirstRow();
@@ -383,6 +354,7 @@ public class MainWindow extends javax.swing.JFrame {
         int num_columns = 0;
 
         try {
+           
             ResultSet result = md.getColumns(
                     null, null, cbxTables.getSelectedItem().toString(), null);
 
@@ -444,7 +416,20 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void DelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelBtnActionPerformed
         // TODO add your handling code here:
- 
+     int row= tblEntries.getSelectedRow();
+      int id =  Integer.parseInt(tblEntries.getModel().getValueAt(row, pkPosition).toString());
+      if(row!=tblEntries.getModel().getRowCount()-1){
+        try{      
+            PreparedStatement delete=con.prepareStatement("DELETE from city WHERE id = ?;");
+             delete.setInt(1, id);
+             delete.executeUpdate();
+             tab.removeRow(row);
+             System.out.println(delete);
+        }catch(Exception e){
+        JOptionPane.showMessageDialog(null, e);
+        }
+      }
+
     }//GEN-LAST:event_DelBtnActionPerformed
     
     /**
@@ -505,4 +490,5 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField txtServer;
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
+  DefaultTableModel tab = new DefaultTableModel();
 }
