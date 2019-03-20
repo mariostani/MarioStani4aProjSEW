@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author mariostani
  */
+// MainWindow bzw wo Einstellungen  und Methoden gesetzt werden
 public class MainWindow extends javax.swing.JFrame {
 
     private Connection con = null;
@@ -256,7 +257,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void txtPortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPortActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPortActionPerformed
-
+    // Connection Button Einstellungen
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         String user = txtUser.getText();
         String password = txtPassword.getText();
@@ -264,6 +265,7 @@ public class MainWindow extends javax.swing.JFrame {
         String server = txtServer.getText();
 
         int port = 0;
+        // Ueberpruefen ob der richtige Port eingefuegt ist
         try {
             port = Integer.parseInt(txtPort.getText());
         } catch (NumberFormatException ex) {
@@ -272,7 +274,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         try {
-            con = DriverManager.getConnection("jdbc:mysql://" + server + ":" + port + "/" + database, user, password);
+            //Verbindung erstellen
+           con = DriverManager.getConnection("jdbc:mysql://" + server + ":" + port + "/" + database, user, password);
             txtUser.setEnabled(false);
             txtPassword.setEnabled(false);
             txtDatabase.setEnabled(false);
@@ -282,7 +285,7 @@ public class MainWindow extends javax.swing.JFrame {
             btnDisconnect.setEnabled(true);
             cbxTables.setEnabled(true);
             
-            md = con.getMetaData();
+              md = con.getMetaData();
             ResultSet res_prim = md.getPrimaryKeys(null, null, "city");
             res_prim.next();
             primary_key = res_prim.getString(4);
@@ -294,6 +297,7 @@ public class MainWindow extends javax.swing.JFrame {
             System.out.println("Could not connect to world database!");
             javax.swing.JOptionPane.showMessageDialog(this, "Could not connect to Server");
         }
+        
 
         /* OPTIONAL LIST TABLES */
         try {
@@ -302,16 +306,15 @@ public class MainWindow extends javax.swing.JFrame {
             ResultSet rs = md.getTables(null, null, null, null);
             while (rs.next()) {
                 cbxTables.addItem(rs.getString(3));
-                //System.out.println(rs.getString(3));
             }
         } catch (SQLException ex) {
             System.out.println("Could not retrieve database meta-data");
             javax.swing.JOptionPane.showMessageDialog(this, "Could not retrieve database meta-data");
         }
     }//GEN-LAST:event_btnConnectActionPerformed
-
+    //DisconnectButton Einstellungen
     private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectActionPerformed
-
+  //Verbindung schliessen
         try {
             con.close();
 
@@ -336,8 +339,9 @@ public class MainWindow extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnDisconnectActionPerformed
-
+    //Update einfeugen
     private void tableModelChanged(TableModelEvent e) {
+        //Zeile und ID wo Veraendetungen gemacht werden,werden gespeichert
         System.out.println("table changed");
         int row = e.getFirstRow();
         String columnName = 
@@ -348,6 +352,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         String entry_changed = 
                 tblEntries.getModel().getValueAt(row, e.getColumn()).toString();  
+        //PreparedStatement fuer Update
         try {
             PreparedStatement update =
                     con.prepareStatement(
@@ -365,23 +370,22 @@ public class MainWindow extends javax.swing.JFrame {
           
           
     }
+    //Combobox mit verschiedenen Tabellen
     private void cbxTablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxTablesActionPerformed
-        int num_columns = 0;
-
+int num_columns = 0;
+            //Spalten bekommen
         try {
-           
             ResultSet result = md.getColumns(
                     null, null, cbxTables.getSelectedItem().toString(), null);
 
-       
-           
+            tableModel = new DefaultTableModel();
 
             while (result.next()) {
                 String columnName = result.getString(4);
 
                 tableModel.addColumn(columnName);
                 num_columns++;
-          
+                //               int columnType = result.getInt(5);
             }
             tblEntries.setModel(tableModel);
 
@@ -391,6 +395,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         Statement stmt;
+        // Tabelle aendern/waehlen
         try {
             stmt = con.createStatement();
             ResultSet res = stmt.executeQuery("SELECT * FROM " + cbxTables.getSelectedItem().toString());
@@ -415,8 +420,6 @@ public class MainWindow extends javax.swing.JFrame {
             System.out.println("Error building result table from database");
             javax.swing.JOptionPane.showMessageDialog(this, "Error building result table from database");
         }
-
-
     }//GEN-LAST:event_cbxTablesActionPerformed
 
     private void tblEntriesVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_tblEntriesVetoableChange
@@ -428,7 +431,7 @@ public class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
        // System.out.println("row edited");
     }//GEN-LAST:event_tblEntriesPropertyChange
-
+// DeleteButton, eine Zeile wird geloescht
     private void DelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DelBtnActionPerformed
         // TODO add your handling code here:
      int row= tblEntries.getSelectedRow();
@@ -437,13 +440,13 @@ public class MainWindow extends javax.swing.JFrame {
             PreparedStatement delete=con.prepareStatement("DELETE from city WHERE id = ?;");
              delete.setInt(1, id);
              delete.executeUpdate();
-            tableModel.removeRow(row);
+       //     tableModel.removeRow(row);
              System.out.println(delete);
         }catch(Exception e){
         JOptionPane.showMessageDialog(null, e);
         }
     }//GEN-LAST:event_DelBtnActionPerformed
-
+// InsertButton neue Zeilen werden eingefuegt
     private void InsertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertBtnActionPerformed
         try { 
             int num_cols=0;
